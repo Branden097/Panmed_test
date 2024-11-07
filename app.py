@@ -172,7 +172,7 @@ def get_treatment():
         return jsonify({"message": "No more treatments available for this group"}), 404
 
     datarecord_id = get_datarecord_id(protocolid, patientid, 55926)
-    #add_dpdr(55929, datarecord_id, treatment, "api")
+    add_dpdr(55929, datarecord_id, treatment, "api")
 
     # 呼叫 send_email 函式來寄送 treatment 資訊
     site = get_value(protocolid, patientid, 55924)
