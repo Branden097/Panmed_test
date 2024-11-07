@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Treatment</title>
+</head>
+<body>
+    <h1>Assign Treatment</h1>
+
+    <!-- 顯示變數 -->
+    <p><strong>Patient Study ID:</strong> {{ mrn }}</p>
+    <p><strong>Stratification:</strong></p>
+    <p>{{ dcis_display }}</p>
+    <p>{{ pathology_display }}</p>
+
+    <p><strong>Please make a confirmation before assigning the treatment.</strong></p>
+
+    <!-- 確認和取消按鈕 -->
+    <button onclick="confirmTreatment()">Assign</button>
+    <button onclick="cancelTreatment()">Cancel</button>
+
+    <div id="result" style="margin-top: 20px;"></div>
+
+    <script>
+        // 獲取 formid、protocolid 和 patientid，這些值可以在渲染模板時傳入
+        const mrn = "{{ mrn }}";
+        const prid = "{{ protocolid }}";
+        const ptid = "{{ patientid }}";
+        const dcis = "{{ dcis_display }}";
+        const path = "{{ pathology_display }}";
+ 
+	const params = {
+            prid: prid,
+            ptid: ptid,
+	    dcis: dcis,
+	    path: path,
+	    mrn: mrn
+
+        };
+        const encodedParams = encodeURIComponent(JSON.stringify(params));
+
+        function confirmTreatment() {
+            // 構建請求 URL，包含查詢參數
+		const requestUrl = `http://120.126.47.174:5000/get_treatment?data=${encodedParams}`;
+
+            // 發送 GET 請求到指定 URL
+            fetch(requestUrl)
+                .then(response => response.json())
+                .then(data => {
+                    // 顯示返回的訊息
+                    document.getElementById("result").innerHTML = `<p>Treatment Assigned: ${data.message}</p>`;
+                })
+                .catch(error => {
+                    // 顯示錯誤訊息
+                    document.getElementById("result").innerHTML = `<p>Error: ${error.message}</p>`;
+                });
+        }
+
+        function cancelTreatment() {
+            // 關閉視窗
+            window.close();
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,108 @@
+import cx_Oracle
+import logging
+
+# 設置 logging 設定
+logging.basicConfig(
+    filename='app.log',        # 日誌檔案名稱
+    level=logging.INFO,         # 記錄的最低等級
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+# 設定 Oracle 資料庫連接參數
+dsn = cx_Oracle.makedsn("192.168.1.177", "1521", sid="labora")
+username = "csis_tra"
+password = "csis1111"
+
+def get_value(protocolid, patientid, datapointid):
+    # 連接 Oracle 資料庫
+    connection = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+    try:
+        # 建立 cursor
+        cursor = connection.cursor()
+
+        # 查詢語句
+        query = """
+            SELECT dpdr.value
+            FROM PROTOCOL_PATIENT pp, visit v, datarecord dr, DATAPOINTDATARECORD dpdr
+            WHERE pp.PATIENTID = :patientid
+            AND pp.PROTOCOLID = :protocolid
+            AND pp.id = v.PCLPATIENTID
+            AND dr.EVENTID = v.EVENTID
+            AND dpdr.DATARECORDID = dr.id
+            AND dpdr.DATAPOINTID = :datapointid
+        """
+
+        # 執行查詢
+        cursor.execute(query, patientid=patientid, protocolid=protocolid, datapointid=datapointid)
+        result = cursor.fetchone()
+
+        # 如果有結果，返回 value；否則返回 None
+        if result:
+            return result[0]
+        else:
+            return None
+    finally:
+        # 關閉 cursor 和連接
+        cursor.close()
+        connection.close()
+
+def get_datarecord_id(protocolid, patientid, datapointid):
+    """查詢特定的 datarecord_id"""
+    connection = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+    try:
+        cursor = connection.cursor()
+        query = """
+            SELECT dr.id
+            FROM PROTOCOL_PATIENT pp, visit v, datarecord dr
+            WHERE pp.PATIENTID = :patientid
+            AND pp.PROTOCOLID = :protocolid
+            AND pp.id = v.PCLPATIENTID
+            AND dr.EVENTID = v.EVENTID
+            AND EXISTS (
+                SELECT 1
+                FROM DATAPOINTDATARECORD dpdr
+                WHERE dpdr.DATARECORDID = dr.id
+                AND dpdr.DATAPOINTID = :datapointid
+            )
+        """
+        cursor.execute(query, patientid=patientid, protocolid=protocolid, datapointid=datapointid)
+        result = cursor.fetchone()
+        return result[0] if result else None
+    finally:
+        cursor.close()
+        connection.close()
+
+def get_mrn(patientid):
+    connection = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+    try:
+        cursor = connection.cursor()
+        query = """
+            select MRN from patient where patientid = :patientid
+        """
+        cursor.execute(query, patientid=patientid)
+        result = cursor.fetchone()
+        return result[0] if result else None
+    finally:
+        cursor.close()
+        connection.close()
+
+def add_dpdr(datapointid, datarecordid, value, lastupdid):
+    """插入新的紀錄到 datapointdatarecord 表中"""
+    connection = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+    try:
+        cursor = connection.cursor()
+        query = """
+            INSERT INTO datapointdatarecord (DATAPOINTID, DATARECORDID, VALUE, LASTUPDID, CREATORID)
+            VALUES (:datapointid, :datarecordid, :value, :lastupdid, :creatorid)
+        """
+        cursor.execute(query, datapointid=datapointid, datarecordid=datarecordid,
+                       value=value, lastupdid=lastupdid, creatorid=lastupdid)
+        connection.commit()  # 提交更改
+        print("記錄已成功插入。")
+    except cx_Oracle.DatabaseError as e:
+        print(f"插入失敗：{e}")
+        connection.rollback()  # 回滾更改
+    finally:
+        cursor.close()
+        connection.close()
+

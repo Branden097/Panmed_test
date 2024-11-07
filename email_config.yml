@@ -1,0 +1,35 @@
+email_settings:
+  to_address:
+    A: 
+      - "a@example.com"
+      - "a2@example.com"
+    B: 
+      - "b@example.com"
+      - "b2@example.com"
+    C: 
+      - "c@example.com"
+    D: 
+      - "d@example.com"
+    E: 
+      - "ghchen@panmed.tw"
+    F: 
+      - "f@example.com"
+  cc_address: ""
+  subject: "[CSIS Randomization] DCIS_step2_Random {mrn}"
+  body_template: |
+    Randomized Treatment Allocation:
+
+    Series No. of Allocation: {count}
+    Patient Study ID: {mrn}
+    Randomized Treatment Arm: {treatment}
+    Stratum:
+    {dcis_display}
+    {pathology_display}
+
+    Expected number of patients: 5000
+    Up-to-date Results in Randomization:
+    {treatment_counts}
+
+    Cumulative number of patients allocated to the specific treatment arm in each stratum after this randomization:
+    {progress}
+
