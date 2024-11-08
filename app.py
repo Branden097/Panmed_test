@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import yaml
 from send_email import send_email  # 匯入 send_email 函式
-from csis_data import get_value, add_dpdr, get_datarecord_id, get_mrn  # 匯入其他函式
+from csis_data import get_value, add_dpdr, get_datarecord_id, get_mrn, get_valueDesc  # 匯入其他函式
 import logging
 import json
 
@@ -136,10 +136,14 @@ def send_email_based_on_site(treatment, site):
 
     treatment_counts = calculate_treatment_counts(excel_file)
 
-    subject = config["email_settings"]["subject"].format(mrn=mrn)
-    body = config["email_settings"]["body_template"].format(treatment=treatment,mrn=mrn,dcis_display=dcis_display,pathology_display=pathology_display, progress=result, count=total_sum, treatment_counts=treatment_counts)
+    hospitalDesc = get_valueDesc(protocolid, patientid, 55924)
 
-    logging.error(dcis_display)
+    subject = config["email_settings"]["subject"].format(mrn=mrn)
+    body = config["email_settings"]["body_template"].format(treatment=treatment,mrn=mrn,dcis_display=dcis_display,
+                                                            pathology_display=pathology_display, progress=result, 
+                                                            count=total_sum, treatment_counts=treatment_counts,
+                                                            hospitalDesc=hospitalDesc)
+
     logging.error(subject)
     logging.error(body)
     # 發送電子郵件

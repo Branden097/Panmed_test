@@ -36,6 +36,33 @@ def get_value(protocolid, patientid, datapointid):
         cursor.close()
         connection.close()
 
+def get_valueDesc(protocolid, patientid, datapointid):
+    # 連接 Oracle 資料庫
+    connection = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+    try:
+        cursor = connection.cursor()
+        query = """
+            SELECT et.DESCRIPTION
+            FROM PROTOCOL_PATIENT pp, visit v, datarecord dr, DATAPOINTDATARECORD dpdr
+            ,datapoint dp , CSISMETA_TRA.MEASUREMENTUNIT mu, CSISMETA_TRA.ENUMTYPE et
+            WHERE pp.PATIENTID = :patientid
+            AND pp.PROTOCOLID = :protocolid
+            AND pp.id = v.PCLPATIENTID
+            AND dr.EVENTID = v.EVENTID
+            AND dpdr.DATARECORDID = dr.id
+            AND dpdr.DATAPOINTID = :datapointid
+            And dp.id = dpdr.DATAPOINTID
+            And dp.MEASUNITID = mu.id
+            And mu.id = et.MEASUNITID
+            And et.VALUE = dpdr.value
+        """
+        cursor.execute(query, patientid=patientid, protocolid=protocolid, datapointid=datapointid)
+        result = cursor.fetchone()
+        return result[0] if result else None
+    finally:
+        cursor.close()
+        connection.close()
+
 def get_datarecord_id(protocolid, patientid, datapointid):
     """查詢特定的 datarecord_id"""
     connection = cx_Oracle.connect(user=username, password=password, dsn=dsn)
