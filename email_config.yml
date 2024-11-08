@@ -21,6 +21,7 @@ email_settings:
 
     Series No. of Allocation: {count}
     Patient Study ID: {mrn}
+    Hospital: {hospitalDesc}
     Randomized Treatment Arm: {treatment}
     Stratum:
     {dcis_display}
