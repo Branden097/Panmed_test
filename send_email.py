@@ -1,11 +1,12 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import config  # 引入設定檔
 
 def send_email(to_address, cc_address, subject, body):
-    # Gmail 帳號和密碼（建議使用應用程式專用密碼）
-    GMAIL_USER = 'randomization@cims.tw'
-    GMAIL_PASSWORD = 'mvmydflkcbncwlnn'
+    # 從 config 中載入 Gmail 帳號和密碼
+    GMAIL_USER = config.GMAIL_USER
+    GMAIL_PASSWORD = config.GMAIL_PASSWORD
 
     # 設置郵件訊息
     msg = MIMEMultipart()
@@ -38,4 +39,3 @@ if __name__ == "__main__":
         subject="測試郵件主旨",
         body="這是測試郵件內文。"
     )
-
