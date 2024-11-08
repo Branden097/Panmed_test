@@ -36,4 +36,62 @@ def get_value(protocolid, patientid, datapointid):
         cursor.close()
         connection.close()
 
-# 其他函數保持不變，只要調用 `username`, `password` 和 `dsn` 即可
+def get_datarecord_id(protocolid, patientid, datapointid):
+    """查詢特定的 datarecord_id"""
+    connection = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+    try:
+        cursor = connection.cursor()
+        query = """
+            SELECT dr.id
+            FROM PROTOCOL_PATIENT pp, visit v, datarecord dr
+            WHERE pp.PATIENTID = :patientid
+            AND pp.PROTOCOLID = :protocolid
+            AND pp.id = v.PCLPATIENTID
+            AND dr.EVENTID = v.EVENTID
+            AND EXISTS (
+                SELECT 1
+                FROM DATAPOINTDATARECORD dpdr
+                WHERE dpdr.DATARECORDID = dr.id
+                AND dpdr.DATAPOINTID = :datapointid
+            )
+        """
+        cursor.execute(query, patientid=patientid, protocolid=protocolid, datapointid=datapointid)
+        result = cursor.fetchone()
+        return result[0] if result else None
+    finally:
+        cursor.close()
+        connection.close()
+
+def get_mrn(patientid):
+    connection = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+    try:
+        cursor = connection.cursor()
+        query = """
+            select MRN from patient where patientid = :patientid
+        """
+        cursor.execute(query, patientid=patientid)
+        result = cursor.fetchone()
+        return result[0] if result else None
+    finally:
+        cursor.close()
+        connection.close()
+
+def add_dpdr(datapointid, datarecordid, value, lastupdid):
+    """插入新的紀錄到 datapointdatarecord 表中"""
+    connection = cx_Oracle.connect(user=username, password=password, dsn=dsn)
+    try:
+        cursor = connection.cursor()
+        query = """
+            INSERT INTO datapointdatarecord (DATAPOINTID, DATARECORDID, VALUE, LASTUPDID, CREATORID)
+            VALUES (:datapointid, :datarecordid, :value, :lastupdid, :creatorid)
+        """
+        cursor.execute(query, datapointid=datapointid, datarecordid=datarecordid,
+                       value=value, lastupdid=lastupdid, creatorid=lastupdid)
+        connection.commit()  # 提交更改
+        print("記錄已成功插入。")
+    except cx_Oracle.DatabaseError as e:
+        print(f"插入失敗：{e}")
+        connection.rollback()  # 回滾更改
+    finally:
+        cursor.close()
+        connection.close()
