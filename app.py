@@ -30,8 +30,10 @@ def confirm_page():
 
     # 從函數中獲取資料
     mrn = get_mrn(patientid)
-    dcis_value = get_value(protocolid, patientid, 55926)
-    pathology_value = get_value(protocolid, patientid, 55927)
+    #dcis_value = get_value(protocolid, patientid, 55926)
+    #pathology_value = get_value(protocolid, patientid, 55927)
+    dcis_value = get_value(protocolid, patientid, 1152)
+    pathology_value = get_value(protocolid, patientid, 1153)
     
      # 根據 DCIS 值設置顯示訊息
     if dcis_value == "1":
@@ -136,7 +138,8 @@ def send_email_based_on_site(treatment, site):
 
     treatment_counts = calculate_treatment_counts(excel_file)
 
-    hospitalDesc = get_valueDesc(protocolid, patientid, 55924)
+    #hospitalDesc = get_valueDesc(protocolid, patientid, 55924)
+    hospitalDesc = get_valueDesc(protocolid, patientid, 1150)
 
     subject = config["email_settings"]["subject"].format(mrn=mrn)
     body = config["email_settings"]["body_template"].format(treatment=treatment,mrn=mrn,dcis_display=dcis_display,
@@ -163,10 +166,13 @@ def get_treatment():
         protocolid = params.get('prid')
         patientid = params.get('ptid')
 
-    # 55926 55927 是固定的 datapoint 換protocol時再確認
-    dcis = get_value(protocolid, patientid, 55926)
-    pathology= get_value(protocolid, patientid, 55927)
-    random_arm = get_value(protocolid, patientid, 55929)
+    # csis tra 55926 55927 是固定的 datapoint 換protocol時再確認
+    #dcis = get_value(protocolid, patientid, 55926)
+    #pathology= get_value(protocolid, patientid, 55927)
+    #random_arm = get_value(protocolid, patientid, 55929)
+    dcis = get_value(protocolid, patientid, 1152)
+    pathology= get_value(protocolid, patientid, 1153)
+    random_arm = get_value(protocolid, patientid, 1155)
 
     if random_arm is not None:
         return jsonify({"message": "Random Arm already exists"}), 200
@@ -175,11 +181,14 @@ def get_treatment():
     if treatment is None:
         return jsonify({"message": "No more treatments available for this group"}), 404
 
-    datarecord_id = get_datarecord_id(protocolid, patientid, 55926)
-    add_dpdr(55929, datarecord_id, treatment, "api")
+    #datarecord_id = get_datarecord_id(protocolid, patientid, 55926)
+    datarecord_id = get_datarecord_id(protocolid, patientid, 1152)
+    #add_dpdr(55929, datarecord_id, treatment, "api")
+    add_dpdr(1155, datarecord_id, treatment, "api")
 
     # 呼叫 send_email 函式來寄送 treatment 資訊
-    site = get_value(protocolid, patientid, 55924)
+    #site = get_value(protocolid, patientid, 55924)
+    site = get_value(protocolid, patientid, 1150)
     send_email_based_on_site(treatment, site)
 
     return jsonify({"message": "Treatment information sent successfully", "treatment": treatment})

@@ -1,20 +1,34 @@
 email_settings:
   to_address:
-    A: 
-      - "a@example.com"
-      - "a2@example.com"
-    B: 
+    NTUH01:
+      - "Likewhite1119@gmail.com"
+      - "shkuo101@ntu.edu.tw"
+    VGHTPE02:
       - "b@example.com"
       - "b2@example.com"
-    C: 
-      - "c@example.com"
-    D: 
+    CGMH03:
+      - "173623@cch.org.tw"
+    KFSYSCC04:
       - "d@example.com"
-    E: 
-      - "ghchen@panmed.tw"
-    F: 
+    MMH05:
+      - "abc@panmed.tw"
+    CCH07:
       - "f@example.com"
-  cc_address: ""
+    NCKU08:
+      - "abc@panmed.tw"
+    OSAKA09:
+      - "abc@panmed.tw"
+    SAGARA10:
+      - "abc@panmed.tw"
+    POHAI11:
+      - "abc@panmed.tw"
+    TMUH12:
+      - "abc@panmed.tw"
+    VGHTC13:
+      - "abc@panmed.tw"
+    TZUCHI14:
+      - "abc@panmed.tw"
+  cc_address: "ywu@panmed.tw"
   subject: "[CSIS Randomization] DCIS_step2_Random {mrn}"
   body_template: |
     Randomized Treatment Allocation:
