@@ -44,7 +44,7 @@ def get_valueDesc(protocolid, patientid, datapointid):
         query = """
             SELECT et.DESCRIPTION
             FROM PROTOCOL_PATIENT pp, visit v, datarecord dr, DATAPOINTDATARECORD dpdr
-            ,datapoint dp , CSISMETA_TRA.MEASUREMENTUNIT mu, CSISMETA_TRA.ENUMTYPE et
+            ,datapoint dp , MEASUREMENTUNIT mu, ENUMTYPE et
             WHERE pp.PATIENTID = :patientid
             AND pp.PROTOCOLID = :protocolid
             AND pp.id = v.PCLPATIENTID
