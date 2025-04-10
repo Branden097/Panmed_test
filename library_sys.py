@@ -1,8 +1,3 @@
-"""
-圖書管理系統 - 用於 SonarQube 測試
-這個程式包含故意引入的各種類型錯誤，包括安全問題、程式碼異味和潛在缺陷
-"""
-
 import json
 import os
 import sys
