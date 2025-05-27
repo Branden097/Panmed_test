@@ -2,7 +2,7 @@ FROM python:3.8-slim
 
 # 安裝必要套件
 RUN apt-get update && \
-    apt-get install -y unzip libaio1 && \
+    apt-get install -y --no-install-recommends unzip libaio1 && \
     rm -rf /var/lib/apt/lists/*
 
 # 建立非 root 使用者
