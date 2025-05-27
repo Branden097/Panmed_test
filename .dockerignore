@@ -1,0 +1,28 @@
+# 敏感設定
+.env
+*.pem
+*.key
+*.crt
+
+# Git 與版本控制
+.git
+.gitignore
+
+# 快取與中間檔
+__pycache__/
+*.pyc
+*.pyo
+*.log
+*.db
+*.sqlite
+
+# 開發環境
+.venv/
+venv/
+.vscode/
+.idea/
+
+# 測試相關
+tests/
+coverage/
+.coverage
