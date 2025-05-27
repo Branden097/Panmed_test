@@ -2,7 +2,10 @@ import os
 import yaml  
 import json
 
-HARDCODED_PASSWORD = "supersecret123"
+PASSWORD = os.environ.get("APP_PASSWORD")
+
+if not PASSWORD:
+    raise ValueError("環境變數 APP_PASSWORD 尚未設定，請設定密碼")
 
 def run_shell_command(user_input):
     os.system("echo " + user_input)
