@@ -16,7 +16,11 @@ logging.basicConfig(
 )
 
 app = Flask(__name__)
-app.secret_key = "your-secret-key"  # 必須設定，不然 CSRF 無法運作
+# 從環境變數中讀取 secret key
+app.secret_key = os.environ.get("FLASK_SECRET_KEY")
+
+if not app.secret_key:
+    raise ValueError("請設定 FLASK_SECRET_KEY 環境變數")
 
 csrf = CSRFProtect(app)
 
