@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, abort, render_template
+from flask_wtf.csrf import CSRFProtect
 import pandas as pd
 import os
 import yaml
@@ -15,6 +16,9 @@ logging.basicConfig(
 )
 
 app = Flask(__name__)
+app.secret_key = "your-secret-key"  # 必須設定，不然 CSRF 無法運作
+
+csrf = CSRFProtect(app)
 
 # 定義 Excel 檔案名稱
 excel_file = 'random_results.xlsx'
